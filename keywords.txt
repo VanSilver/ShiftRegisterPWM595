@@ -1,0 +1,15 @@
+###########################################
+# Datatypes (KEYWORD1)
+###########################################
+
+ShiftRegisterPWM595	KEYWORD1
+
+###########################################
+# Methods and Functions (KEYWORD2)
+###########################################
+ShiftRegisterPWM595			KEYWORD2
+set			KEYWORD2
+update			KEYWORD2
+begin			KEYWORD2
+onTimer			KEYWORD2
+shiftOut			KEYWORD2
