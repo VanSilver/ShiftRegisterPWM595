@@ -20,7 +20,7 @@ void setup()
   Serial.begin(115200);
 
   // Begin with SupperFast speed
-  sr.begin(ShiftRegisterPWM595::SuperFast);
+  sr.begin(sr.SuperFast);
 }
 
 void loop()
