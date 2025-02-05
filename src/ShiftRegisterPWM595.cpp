@@ -26,7 +26,7 @@ void ShiftRegisterPWM595::set(uint8_t pin, uint8_t value)
     // For each step, set the bit of the led channel based on the comparative value
     for (int t = 0; t < resolution; ++t)
     {
-        // The calculation below set the bit (battery % 8) for each time t
+        // set (pin % 8)th bit to (value > t)
         data[t + shiftRegister * resolution] ^= (-(value > t) ^ data[t + shiftRegister * resolution]) & (1 << (pin % 8));
     }
 }
