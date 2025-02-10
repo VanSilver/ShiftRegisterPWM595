@@ -1,3 +1,12 @@
+/*
+* If use ESP8266, ESP32 does not need to do
+* - If you use Platformio, add the following line to Platformio.ini:
+*   board_build.f_cpu = 160000000L
+*
+* - If you use ArduinoIDE, do the following:
+*   Tools - CPU Frequency -> Select 160Mhz
+*/
+
 #include <Arduino.h>
 #include "ShiftRegisterPWM595.h"
 

@@ -57,22 +57,27 @@ void ShiftRegisterPWM595::shiftOut(uint8_t dataByte)
 }
 void ShiftRegisterPWM595::begin()
 {
+    uint64_t alarm_value = 39; // Default Medium
+#ifdef ESP32
     // Use Timer 0, Divider = 80 => Base frequency = 80mhz/80 = 1mHz
     timer = timerBegin(0, 80, true);
     timerAttachInterrupt(timer, &ShiftRegisterPWM595::onTimer, true);
-    uint64_t alarm_value = 39; // Default Medium
-
     timerAlarmWrite(timer, alarm_value, true);
     timerAlarmEnable(timer);
+#endif
+#ifdef ESP8266
+    noInterrupts();                                       // Disable timer interrupt before config
+    timer1_isr_init();                                    // Init ISR for Timer1
+    timer1_attachInterrupt(ShiftRegisterPWM595::onTimer); // set Callback
+    timer1_enable(TIM_DIV1, TIM_EDGE, TIM_LOOP);          // Base frequency = 80mhz/1
+    timer1_write(alarm_value * 80);                       // 1us = 80tick
+    interrupts();                                         // Enable timer interrupt
+#endif
 }
 
 void ShiftRegisterPWM595::begin(UpdateFrequency freq)
 {
-    // Use Timer 0, Divider = 80 => Base frequency = 80mhz/80 = 1mHz
-    timer = timerBegin(0, 80, true);
-    timerAttachInterrupt(timer, &ShiftRegisterPWM595::onTimer, true);
     uint64_t alarm_value = 39; // Default Medium
-
     switch (freq)
     {
     case VerySlow:
@@ -91,8 +96,21 @@ void ShiftRegisterPWM595::begin(UpdateFrequency freq)
         alarm_value = 20;
         break;
     }
+#ifdef ESP32
+    // Use Timer 0, Divider = 80 => Base frequency = 80mhz/80 = 1mHz
+    timer = timerBegin(0, 80, true);
+    timerAttachInterrupt(timer, &ShiftRegisterPWM595::onTimer, true);
     timerAlarmWrite(timer, alarm_value, true);
     timerAlarmEnable(timer);
+#endif
+#ifdef ESP8266
+    noInterrupts();                                       // Disable timer interrupt before config
+    timer1_isr_init();                                    // Init ISR for Timer1
+    timer1_attachInterrupt(ShiftRegisterPWM595::onTimer); // set Callback
+    timer1_enable(TIM_DIV1, TIM_EDGE, TIM_LOOP);          // Base frequency = 80mhz/1
+    timer1_write(alarm_value * 80);                       // 1us = 80tick
+    interrupts();                                         // Enable timer interrupt
+#endif
 }
 
 void IRAM_ATTR ShiftRegisterPWM595::onTimer()

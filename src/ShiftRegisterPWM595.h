@@ -8,13 +8,15 @@
  *   Library for PWM control of the 74HC595 shift register.
  *   This library is a modified version of the ShiftRegisterPWM library
  *   (https://github.com/Simsso/ShiftRegister-PWM-Library)
- *   to support the ESP32 on the Arduino Framework (currently, it only works on the ESP32).
+ *   to support the ESP32 and ESP8266 on the Arduino Framework.
  ***********************************************************************************************************/
 #ifndef ShiftRegisterPWM595_h
 #define ShiftRegisterPWM595_h
 
 #include <Arduino.h>
+#ifdef ESP32
 #include "driver/timer.h"
+#endif
 
 class ShiftRegisterPWM595
 {
@@ -42,11 +44,14 @@ private:
     static ShiftRegisterPWM595 *instance;
     uint8_t shiftRegisterCount;
     uint8_t resolution;
-    uint8_t *data;         // Array data for PWM: data[t + shiftRegister * resolution]
-    volatile uint8_t time; // Internal time variable from 0 to (Resolution-1)
+    uint8_t *data; // Array data for PWM: data[t + shiftRegister * resolution]
     bool singleShiftRegister;
     uint8_t dataPin, clockPin, latchPin;
+    volatile uint8_t time; // Internal time variable from 0 to (Resolution-1)
+#ifdef ESP32
     hw_timer_t *timer = NULL;
+#endif
+
 };
 
 #endif
