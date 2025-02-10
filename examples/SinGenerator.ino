@@ -28,8 +28,8 @@ void setup()
 {
   Serial.begin(115200);
 
-  // Begin with SupperFast speed
-  sr.begin(sr.SuperFast);
+  // Begin with Medium speed (note: USE ESP8266 do not use SuperFast)
+  sr.begin(sr.Medium);
 }
 
 void loop()
