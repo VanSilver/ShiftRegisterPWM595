@@ -33,7 +33,7 @@ public:
     };
 
     ShiftRegisterPWM595(uint8_t shiftRegisterCount, uint8_t resolution, uint8_t dataPin, uint8_t clockPin, uint8_t latchPin);
-    void set(uint8_t pin, uint8_t value);
+    void set(uint8_t pin, uint8_t value); // (LED position, value PWM) 
     void update();
     void begin();
     void begin(UpdateFrequency freq);
@@ -51,7 +51,6 @@ private:
 #ifdef ESP32
     hw_timer_t *timer = NULL;
 #endif
-
 };
 
 #endif

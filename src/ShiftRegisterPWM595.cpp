@@ -33,12 +33,22 @@ void ShiftRegisterPWM595::set(uint8_t pin, uint8_t value)
 
 void ShiftRegisterPWM595::update()
 {
-    digitalWrite(latchPin, LOW);
+#ifdef ESP32
+    gpio_set_level((gpio_num_t)latchPin, 0); // latchPin LOW
+#endif
+#ifdef ESP8266
+    GPOC = (1 << latchPin); // latchPin LOW
+#endif
     for (int i = shiftRegisterCount - 1; i >= 0; i--)
     {
         shiftOut(data[time + i * resolution]);
     }
-    digitalWrite(latchPin, HIGH);
+#ifdef ESP32
+    gpio_set_level((gpio_num_t)latchPin, 1); // latchPin HIGH
+#endif
+#ifdef ESP8266
+    GPOS = (1 << latchPin); // latchPin HIGH
+#endif
     if (++time == resolution)
     {
         time = 0;
@@ -50,11 +60,20 @@ void ShiftRegisterPWM595::shiftOut(uint8_t dataByte)
     // shiftout data in order from the bit MSB to LSB
     for (int i = 0; i < 8; i++)
     {
-        digitalWrite(clockPin, LOW);
-        digitalWrite(dataPin, (dataByte & (1 << (7 - i))) ? HIGH : LOW);
-        digitalWrite(clockPin, HIGH);
+#ifdef ESP32
+        gpio_set_level((gpio_num_t)clockPin, 0);                                  // clockPin LOW
+        gpio_set_level((gpio_num_t)dataPin, (dataByte & (1 << (7 - i))) ? 1 : 0); // dataPin HIGH or LOW
+        gpio_set_level((gpio_num_t)clockPin, 1);                                  // clockPin HIGH
+#endif
+#ifdef ESP8266
+        GPOC = (1 << clockPin);                            // clockPin LOW
+        dataByte & (1 << (7 - i)) ? GPOS = (1 << dataPin)  // dataPin HIGH
+                                  : GPOC = (1 << dataPin); // dataPin LOW
+        GPOS = (1 << clockPin);                            // clockPin HIGH
+#endif
     }
 }
+
 void ShiftRegisterPWM595::begin()
 {
     uint64_t alarm_value = 39; // Default Medium
@@ -115,10 +134,8 @@ void ShiftRegisterPWM595::begin(UpdateFrequency freq)
 
 void IRAM_ATTR ShiftRegisterPWM595::onTimer()
 {
-    // cli(); //disable interrupt
     if (instance)
     {
         instance->update();
     }
-    // sei(); //enable interrupt
 }
