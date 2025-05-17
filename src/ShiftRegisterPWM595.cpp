@@ -134,8 +134,10 @@ void ShiftRegisterPWM595::begin(UpdateFrequency freq)
 
 void IRAM_ATTR ShiftRegisterPWM595::onTimer()
 {
+    cli();
     if (instance)
     {
         instance->update();
     }
+    sei();
 }
